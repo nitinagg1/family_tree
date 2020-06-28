@@ -33,8 +33,10 @@ parent_child = { "anga": ["chit", "ish", "vich", "aras", "satya"],
 def main():
 
     family_tree = FamilyTree()
-    family_tree.initialise_family_tree(male_members, Sex.Male)
-    family_tree.initialise_family_tree(female_members, Sex.Female)
+
+    ## init family tree
+    family_tree.initialise_family_tree(male_members, Gender.Male)
+    family_tree.initialise_family_tree(female_members, Gender.Female)
     family_tree.set_husband_wife(husband_wife)
     family_tree.set_parent_children(parent_child)
 

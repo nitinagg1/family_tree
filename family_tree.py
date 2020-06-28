@@ -9,9 +9,9 @@ from relationships import RelationShipClassMap
 class FamilyTree(object):
 
     @staticmethod
-    def initialise_family_tree(members, sex):
+    def initialise_family_tree(members, gender):
         for member in members:
-            member_cls = MemberClassMap.get(sex)
+            member_cls = MemberClassMap.get(gender)
             new_member = member_cls(member)
             result = FamilyRepo().add_family_member(new_member)
             if not result:
@@ -47,7 +47,7 @@ class FamilyTree(object):
                 child_obj = FamilyRepo().get_member(child)
                 child_obj.mother = wife
                 child_obj.father = husband
-                if child_obj.sex == Sex.Female:
+                if child_obj.gender == Gender.Female:
                     family_obj.daughters.append(child_obj.name)
                 else:
                     family_obj.sons.append(child_obj.name)
@@ -64,3 +64,6 @@ class FamilyTree(object):
 
         return relationship_cls(member).get_relations()
 
+    @staticmethod
+    def add_child(mothers_name, child_name, gender):
+        pass

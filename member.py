@@ -7,9 +7,9 @@ from constants import *
 
 class Member(ABC):
 
-    def __init__(self, name, sex, mother=None, father=None):
+    def __init__(self, name, gender, mother=None, father=None):
         self.name = name
-        self.sex = sex
+        self.gender = gender
         self.mother = mother
         self.father = father
         self.family_id = None
@@ -80,7 +80,7 @@ class Member(ABC):
 class FemaleMember(Member):
 
     def __init__(self, name, mother=None, father=None):
-        super(FemaleMember, self).__init__(name, Sex.Female, mother, father)
+        super(FemaleMember, self).__init__(name, Gender.Female, mother, father)
 
     def get_brothers(self):
         father_obj = self.get_father_obj()
@@ -97,7 +97,7 @@ class FemaleMember(Member):
 class MaleMember(Member):
 
     def __init__(self, name, mother=None, father=None):
-        super(MaleMember, self).__init__(name, Sex.Male, mother, father)
+        super(MaleMember, self).__init__(name, Gender.Male, mother, father)
 
     def get_brothers(self):
         father_obj = self.get_father_obj()
@@ -112,6 +112,6 @@ class MaleMember(Member):
 
 
 MemberClassMap = {
-    Sex.Male: MaleMember,
-    Sex.Female: FemaleMember
+    Gender.Male: MaleMember,
+    Gender.Female: FemaleMember
 }
