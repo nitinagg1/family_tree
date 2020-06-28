@@ -1,9 +1,9 @@
-from member import Member
+from member import Member, MemberClassMap
 from constants import *
 from repo.family_repo import FamilyRepo
 from family_tree_exceptions import *
 from family import Family
-from relationship_path import RelationShipClassMap
+from relationships import RelationShipClassMap
 
 
 class FamilyTree(object):
@@ -11,7 +11,8 @@ class FamilyTree(object):
     @staticmethod
     def initialise_family_tree(members, sex):
         for member in members:
-            new_member = Member(member, sex=sex)
+            member_cls = MemberClassMap.get(sex)
+            new_member = member_cls(member)
             result = FamilyRepo().add_family_member(new_member)
             if not result:
                 raise MemberAlreadyExists(name=new_member.name)

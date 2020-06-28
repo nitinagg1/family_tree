@@ -28,9 +28,7 @@ class Son(Relationships):
         super(Son, self).__init__(member_obj)
 
     def get_relations(self):
-        family_id = self.member_obj.get_family_id()
-        family_obj = self.get_family_obj(family_id)
-        return family_obj.get_sons()
+        return self.member_obj.get_sons()
 
 
 class Daughter(Relationships):
@@ -39,9 +37,7 @@ class Daughter(Relationships):
         super(Daughter, self).__init__(member_obj)
 
     def get_relations(self):
-        family_id = self.member_obj.get_family_id()
-        family_obj = self.get_family_obj(family_id)
-        return family_obj.get_daughters()
+        return self.member_obj.get_daughters()
 
 
 class Siblings(Relationships):
@@ -50,80 +46,47 @@ class Siblings(Relationships):
         super(Siblings, self).__init__(member_obj)
 
     def get_relations(self):
-        family_id = self.member_obj.get_parent_family_id()
-        family_obj = self.get_family_obj(family_id)
-        children = family_obj.children()
-        children.remove(self.member_obj.name)
-        return children
+        return self.member_obj.get_siblings()
 
 
-class PaternalFamily(Relationships):
+class PaternalUncle(Relationships):
 
     def __init__(self, member_obj):
-        super(PaternalFamily, self).__init__(member_obj)
+        super(PaternalUncle, self).__init__(member_obj)
 
-    def get_paternal_family(self):
+    def get_relations(self):
         father_obj = self.member_obj.get_father_obj()
-        grandfather_obj = self.father_obj.get_father_obj()
-        family_obj = FamilyRepo().get_family(grandfather_obj.family_id)
-        return family_obj, father_obj.name
+        return father_obj.get_brothers()
 
 
-class PaternalUncle(PaternalFamily):
+class PaternalAunt(Relationships):
 
     def __init__(self, member_obj):
-        super(PaternalUncle, self).__init__(member_obj)
+        super(PaternalAunt, self).__init__(member_obj)
 
     def get_relations(self):
-        family_obj, father = self.get_paternal_family()
-        uncles = family_obj.get_sons(father)
-        return uncles
+        father_obj = self.member_obj.get_father_obj()
+        return father_obj.get_sisters()
 
 
-class PaternalAunt(PaternalFamily):
-
-    def __init__(self, member_obj):
-        super(PaternalUncle, self).__init__(member_obj)
-
-    def get_relations(self):
-        family_obj, father = self.get_paternal_family()
-        aunts = family_obj.get_daughters()
-        return aunts
-
-
-class MaternalFamily(Relationships):
-
-    def __init__(self, member_obj):
-        super(MaternalFamily, self).__init__(member_obj)
-
-    def get_maternal_family(self):
-        mother_obj = self.member_obj.get_mother_obj()
-        grandfather_obj = self.mother_obj.get_father_obj()
-        family_obj = FamilyRepo().get_family(grandfather_obj.family_id)
-        return family_obj, mother_obj.name
-
-
-class MaternalUncle(MaternalFamily):
+class MaternalUncle(Relationships):
 
     def __init__(self, member_obj):
         super(MaternalUncle, self).__init__(member_obj)
 
     def get_relations(self):
-        family_obj, mother = self.get_maternal_family()
-        uncles = family_obj.get_sons()
-        return uncles
+        mother_obj = self.member_obj.get_mother_obj()
+        return mother_obj.get_brothers()
 
 
-class MaternalAunt(MaternalFamily):
+class MaternalAunt(Relationships):
 
     def __init__(self, member_obj):
         super(MaternalAunt, self).__init__(member_obj)
 
     def get_relations(self):
-        family_obj, mother = self.get_maternal_family()
-        aunts = family_obj.get_daughters()
-        aunts.remove(mother)
-        return aunts
+        mother_obj = self.member_obj.get_mother_obj()
+        return mother_obj.get_sisters()
 
 
 class SisterInLaw(Relationships):
@@ -134,19 +97,8 @@ class SisterInLaw(Relationships):
     def get_spouse_sisters(self):
         in_laws = []
         try:
-            spouse = self.member_obj.get_spouse()
-            spouse_obj = FamilyRepo().get_member(spouse)
-            in_laws = []
-            try:
-                family_id = spouse_obj.get_parent_family_id()
-                family_obj = self.get_family_obj(family_id)
-                in_laws += family_obj.get_daughters()
-                try:
-                    in_laws.remove(spouse_obj.name)
-                except:
-                    pass
-            except FamilyNotFound as e:
-                pass
+            spouse_obj = self.member_obj.get_spouse_obj()
+            in_laws += spouse_obj.get_sisters()
 
         except SpouseNotExist as e:
             pass
@@ -155,25 +107,20 @@ class SisterInLaw(Relationships):
 
     def get_spouse_of_brothers(self):
         in_laws = []
-        family_id = self.member_obj.get_parent_family_id()
-        family_obj = FamilyRepo().get_family(family_id)
-        brothers = family_obj.get_sons()
-        try:
-            brothers.remove(self.member_obj.name)
-        except:
-            pass
+        brothers = self.member_obj.get_brothers()
         for brother in brothers:
             try:
                 brother_obj = FamilyRepo().get_member(brother)
-                spouse = brother_obj.get_spouse()
+                spouse = brother_obj.get_spouse_name()
                 in_laws.append(spouse)
-            except SpouseNotExist as e:
+            except SpouseNotExist:
                 pass
 
         return in_laws
 
     def get_relations(self):
         return self.get_spouse_of_brothers() + self.get_spouse_sisters()
+
 
 class BrotherInLaw(Relationships):
 
@@ -182,40 +129,23 @@ class BrotherInLaw(Relationships):
 
     def get_spouse_brothers(self):
         in_laws = []
+        spouse_obj = self.member_obj.get_spouse_obj()
         try:
-            spouse = self.member_obj.get_spouse()
-            spouse_obj = FamilyRepo().get_member(spouse)
-            in_laws = []
-            try:
-                family_id = spouse_obj.get_parent_family_id()
-                family_obj = self.get_family_obj(family_id)
-                in_laws += family_obj.get_sons()
-                try:
-                    in_laws.remove(spouse_obj.name)
-                except:
-                    pass
-            except FamilyNotFound as e:
-                pass
-        except SpouseNotExist as e:
+            in_laws += spouse_obj.get_brothers()
+        except SpouseNotExist:
             pass
 
         return in_laws
 
     def get_spouse_of_sisters(self):
         in_laws = []
-        family_id = self.member_obj.get_parent_family_id()
-        family_obj = FamilyRepo().get_family(family_id)
-        brothers = family_obj.get_sons()
-        try:
-            brothers.remove(self.member_obj.name)
-        except:
-            pass
-        for brother in brothers:
+        sisters = self.member_obj.get_sisters()
+        for sister in sisters:
             try:
-                brother_obj = FamilyRepo().get_member(brother)
-                spouse = brother_obj.get_spouse()
+                sister_obj = FamilyRepo().get_member(sister)
+                spouse = sister_obj.get_spouse_name()
                 in_laws.append(spouse)
-            except SpouseNotExist as e:
+            except SpouseNotExist:
                 pass
 
         return in_laws

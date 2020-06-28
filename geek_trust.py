@@ -29,6 +29,7 @@ parent_child = { "anga": ["chit", "ish", "vich", "aras", "satya"],
                 "krpi": ["kriya", "krithi"]
                 }
 
+
 def main():
 
     family_tree = FamilyTree()
@@ -38,11 +39,6 @@ def main():
     family_tree.set_parent_children(parent_child)
 
     print (family_tree.get_relationship("atya", "Sister-In-Law".lower()))
-
-    # input_file = sys.argv[1]
-    # parse the file and process the command
-    # print the output
-
 
 
 if __name__ == "__main__":
