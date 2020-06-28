@@ -18,3 +18,9 @@ class Family(object):
 
     def get_children(self):
         return self.sons + self.daughters
+
+    def append_to_sons(self, son):
+        self.sons.append(son)
+
+    def append_to_daughters(self, daughter):
+        self.daughters.append(daughter)

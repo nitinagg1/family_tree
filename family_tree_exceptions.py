@@ -28,7 +28,7 @@ class MemberAlreadyExists(FamilyTreeException):
 
 
 class MemberNotFound(FamilyTreeException):
-    MESSAGE = 'PERSON NOT FOUND'
+    MESSAGE = 'PERSON_NOT_FOUND'
     CODE = 3
 
 
@@ -48,5 +48,14 @@ class UnknownRelationship(FamilyTreeException):
 
 
 class FamilyNotFound(FamilyTreeException):
-    MESSAGE = 'Family Not Found'
+    MESSAGE = 'None'
     CODE = 6
+
+
+class ChildAdditionNotAllowed(FamilyTreeException):
+    MESSAGE = 'CHILD_ADDITION_FAILED'
+    CODE = 7
+
+class ParentNotFound(FamilyTreeException):
+    MESSAGE = 'Parent Not Found'
+    CODE = 8

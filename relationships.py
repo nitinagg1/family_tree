@@ -100,22 +100,26 @@ class SisterInLaw(Relationships):
             spouse_obj = self.member_obj.get_spouse_obj()
             in_laws += spouse_obj.get_sisters()
 
-        except SpouseNotExist as e:
+        except SpouseNotExist:
+            pass
+        except ParentNotFound:
             pass
 
         return in_laws
 
     def get_spouse_of_brothers(self):
         in_laws = []
-        brothers = self.member_obj.get_brothers()
-        for brother in brothers:
-            try:
-                brother_obj = FamilyRepo().get_member(brother)
-                spouse = brother_obj.get_spouse_name()
-                in_laws.append(spouse)
-            except SpouseNotExist:
-                pass
-
+        try:
+            brothers = self.member_obj.get_brothers()
+            for brother in brothers:
+                try:
+                    brother_obj = FamilyRepo().get_member(brother)
+                    spouse = brother_obj.get_spouse_name()
+                    in_laws.append(spouse)
+                except SpouseNotExist:
+                    pass
+        except ParentNotFound:
+            pass
         return in_laws
 
     def get_relations(self):
@@ -134,19 +138,24 @@ class BrotherInLaw(Relationships):
             in_laws += spouse_obj.get_brothers()
         except SpouseNotExist:
             pass
+        except ParentNotFound:
+            pass
 
         return in_laws
 
     def get_spouse_of_sisters(self):
         in_laws = []
-        sisters = self.member_obj.get_sisters()
-        for sister in sisters:
-            try:
-                sister_obj = FamilyRepo().get_member(sister)
-                spouse = sister_obj.get_spouse_name()
-                in_laws.append(spouse)
-            except SpouseNotExist:
-                pass
+        try:
+            sisters = self.member_obj.get_sisters()
+            for sister in sisters:
+                try:
+                    sister_obj = FamilyRepo().get_member(sister)
+                    spouse = sister_obj.get_spouse_name()
+                    in_laws.append(spouse)
+                except SpouseNotExist:
+                    pass
+        except ParentNotFound:
+            pass
 
         return in_laws
 
